@@ -1,0 +1,6 @@
+.DS_Store
+build/
+deps/
+*.o
+*.swp
+example/example
