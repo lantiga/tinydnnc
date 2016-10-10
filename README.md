@@ -11,7 +11,7 @@ To build the library:
 sh get_deps.sh
 mkdir build
 cd build
-cmake ../ && make
+cmake -DCMAKE_BUILD_TYPE:STRING=Release ../ && make
 ```
 
 To build the example (mnist):
