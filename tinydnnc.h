@@ -230,8 +230,8 @@ extern "C" {
   void DNN_Train(DNN_Network *net,
                  DNN_Optimizer *opt,
                  enum DNN_LossType losstype,
-                 float **inputs, // std::vector<vec_t>&, aka tensor_t&
-                 long *outputs, // std::vector<label_t>&
+                 float *inputs,
+                 long *outputs,
                  long n_samples,
                  long sample_size,
                  long batch_size,
@@ -246,8 +246,8 @@ extern "C" {
   void DNN_Fit(DNN_Network *net,
                DNN_Optimizer *opt,
                enum DNN_LossType losstype,
-               float **inputs, // std::vector<vec_t>&, aka tensor_t&
-               float **outputs, // std::vector<label_t>&
+               float *inputs,
+               float *outputs,
                long n_samples,
                long sample_size,
                long output_size,
@@ -271,15 +271,15 @@ extern "C" {
                         long input_size);
 
   float DNN_GetError(DNN_Network *net,
-                     float **inputs, // std::vector<vec_t>&, aka tensor_t&
+                     float *inputs, // std::vector<vec_t>&, aka tensor_t&
                      long *outputs, // std::vector<label_t>&
                      long n_samples,
                      long sample_size);
 
   float DNN_GetLoss(DNN_Network *net,
                     enum DNN_LossType losstype,
-                    float **inputs, // std::vector<vec_t>&, aka tensor_t&
-                    float **outputs, // std::vector<vec_t>&
+                    float *inputs, // std::vector<vec_t>&, aka tensor_t&
+                    float *outputs, // std::vector<vec_t>&
                     long n_samples,
                     long sample_size,
                     long output_size);

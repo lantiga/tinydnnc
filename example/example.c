@@ -7,7 +7,7 @@
 #include "mnist.h"
 
 typedef struct CallbackData {
-  float **test_images;
+  float *test_images;
   long *test_labels;
   long nsamples;
   long sample_size;
@@ -36,6 +36,8 @@ int main(int argc, char* argv[])
   int imgsize = 28;
   int nclasses = 10;
 
+  int npixels = imgsize * imgsize;
+
   mnist_data *mnist_train_data;
   mnist_data *mnist_test_data;
   unsigned int nimages;
@@ -59,14 +61,13 @@ int main(int argc, char* argv[])
     exit(1);
   }
 
-  float **train_images = (float **)malloc(nimages*sizeof(float *));
+  float *train_images = (float *)malloc(nimages*npixels*sizeof(float));
   long *train_labels = (long *)malloc(nimages*sizeof(long));
 
   for (int n=0; n<nimages; n++) {
-    train_images[n] = (float *)malloc(imgsize*imgsize*sizeof(float *));
     for (int i=0; i<imgsize; i++) {
       for (int j=0; j<imgsize; j++) {
-        train_images[n][i*imgsize+j] = mnist_train_data[n].data[i][j];
+        train_images[n*npixels + i*imgsize+j] = mnist_train_data[n].data[i][j];
       }
     }
     train_labels[n] = mnist_train_data[n].label;
@@ -83,14 +84,13 @@ int main(int argc, char* argv[])
     exit(1);
   }
 
-  float **test_images = (float **)malloc(n_test_images*sizeof(float *));
+  float *test_images = (float *)malloc(n_test_images*npixels*sizeof(float));
   long *test_labels = (long *)malloc(n_test_images*sizeof(long));
 
   for (int n=0; n<n_test_images; n++) {
-    test_images[n] = (float *)malloc(imgsize*imgsize*sizeof(float *));
     for (int i=0; i<imgsize; i++) {
       for (int j=0; j<imgsize; j++) {
-        test_images[n][i*imgsize+j] = mnist_test_data[n].data[i][j];
+        test_images[n*npixels + i*imgsize+j] = mnist_test_data[n].data[i][j];
       }
     }
     test_labels[n] = mnist_test_data[n].label;
@@ -198,15 +198,9 @@ int main(int argc, char* argv[])
 
   DNN_OptimizerDelete(optimizer);
 
-  for (int n=0; n<nimages; n++) {
-    free(train_images[n]);
-  }
   free(train_images);
   free(train_labels);
 
-  for (int n=0; n<n_test_images; n++) {
-    free(test_images[n]);
-  }
   free(test_images);
   free(test_labels);
 

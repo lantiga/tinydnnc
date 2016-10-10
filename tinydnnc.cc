@@ -761,8 +761,8 @@ DNN_Optimizer *DNN_MomentumOptimizer(float alpha, // 0.01
 void DNN_Train(DNN_Network *net,
                DNN_Optimizer *opt,
                enum DNN_LossType losstype,
-               float **inputs, // std::vector<vec_t>&, aka tensor_t&
-               long *outputs, // std::vector<label_t>&
+               float *inputs,
+               long *outputs,
                long n_samples,
                long sample_size,
                long batch_size,
@@ -784,10 +784,11 @@ void DNN_Train(DNN_Network *net,
   }
 
   for (int n=0; n<n_samples; n++) {
-    dnn_inputs[n].assign(inputs[n], inputs[n]+sample_size);
+    dnn_inputs[n].assign(inputs+n*sample_size,
+                         inputs+(n+1)*sample_size);
     dnn_outputs[n] = outputs[n];
     if (cost) {
-      dnn_cost[n].assign(cost[n], cost[n]+1);
+      dnn_cost[n].assign(cost+n, cost+n+1);
     }
   }
 
@@ -812,8 +813,8 @@ void DNN_Train(DNN_Network *net,
 void DNN_Fit(DNN_Network *net,
              DNN_Optimizer *opt,
              enum DNN_LossType losstype,
-             float **inputs, // std::vector<vec_t>&, aka tensor_t&
-             float **outputs, // std::vector<vec_t>&
+             float *inputs,
+             float *outputs,
              long n_samples,
              long sample_size,
              long output_size,
@@ -835,10 +836,13 @@ void DNN_Fit(DNN_Network *net,
   }
 
   for (int n=0; n<n_samples; n++) {
-    dnn_inputs[n].assign(inputs[n], inputs[n]+sample_size);
-    dnn_outputs[n].assign(outputs[n], outputs[n]+output_size);
+    dnn_inputs[n].assign(inputs+n*sample_size,
+                         inputs+(n+1)*sample_size);
+    dnn_outputs[n].assign(outputs+n*output_size,
+                          outputs+(n+1)*output_size);
     if (cost) {
-      dnn_cost[n].assign(cost[n], cost[n]+output_size);
+      dnn_cost[n].assign(cost+n*output_size,
+                         cost+(n+1)*output_size);
     }
   }
 
@@ -892,8 +896,8 @@ long DNN_PredictLabel(DNN_Network *net,
 }
 
 float DNN_GetError(DNN_Network *net,
-                   float **inputs, // std::vector<vec_t>&, aka tensor_t&
-                   long *outputs, // std::vector<label_t>&
+                   float *inputs,
+                   long *outputs,
                    long n_samples,
                    long sample_size)
 {
@@ -911,7 +915,8 @@ float DNN_GetError(DNN_Network *net,
   // on the C++ side. Passing this struct to GetLoss, GetError,
   // Train and Fit would avoid the copy at every call.
   for (int n=0; n<n_samples; n++) {
-    dnn_inputs[n].assign(inputs[n], inputs[n]+sample_size);
+    dnn_inputs[n].assign(inputs+n*sample_size,
+                         inputs+(n+1)*sample_size);
     dnn_outputs[n] = outputs[n];
   }
 
@@ -926,8 +931,8 @@ float DNN_GetError(DNN_Network *net,
 
 float DNN_GetLoss(DNN_Network *net,
                   enum DNN_LossType losstype,
-                  float **inputs, // std::vector<vec_t>&, aka tensor_t&
-                  float **outputs, // std::vector<vec_t>&
+                  float *inputs,
+                  float *outputs,
                   long n_samples,
                   long sample_size,
                   long output_size)
@@ -937,8 +942,10 @@ float DNN_GetLoss(DNN_Network *net,
 
   // FIXME: copying every time is a waste. See above.
   for (int n=0; n<n_samples; n++) {
-    dnn_inputs[n].assign(inputs[n], inputs[n]+sample_size);
-    dnn_outputs[n].assign(outputs[n], outputs[n]+output_size);
+    dnn_inputs[n].assign(inputs+n*sample_size,
+                         inputs+(n+1)*sample_size);
+    dnn_outputs[n].assign(outputs+n*output_size,
+                          outputs+(n+1)*output_size);
   }
 
   network<sequential> &dnn_net = *(network<sequential> *)net->ptr;
