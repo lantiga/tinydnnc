@@ -6,6 +6,10 @@
 #define MNIST_DOUBLE
 #include "mnist.h"
 
+#include <time.h>
+
+clock_t tick;
+
 typedef struct CallbackData {
   float *test_images;
   long *test_labels;
@@ -27,8 +31,11 @@ void epochCb(DNN_Network* net, void *data)
                              cbdata->test_labels,
                              cbdata->nsamples,
                              cbdata->sample_size);
-  printf("Epoch: %03ld; Error: %f.\n",epoch,error);
+  clock_t diff = clock() - tick;
+  float elapsed = (float)diff / CLOCKS_PER_SEC;
+  printf("Epoch: %03ld; Error: %f; Elapsed(s): %f\n",epoch,error,elapsed);
   epoch += 1;
+  tick = clock();
 }
 
 int main(int argc, char* argv[])
@@ -53,8 +60,6 @@ int main(int argc, char* argv[])
   ret = mnist_load("../deps/tiny-dnn/data/train-images.idx3-ubyte",
                    "../deps/tiny-dnn/data/train-labels.idx1-ubyte",
                    &mnist_train_data, &nimages);
-
-  nimages = 10000;
 
   if (ret) {
     printf("Error reading mnist data: %d\n", ret);
@@ -101,12 +106,12 @@ int main(int argc, char* argv[])
   CallbackData cbdata;
   cbdata.test_images = test_images;
   cbdata.test_labels = test_labels;
-  cbdata.nsamples = nimages;
-  cbdata.sample_size = imgsize*imgsize;
+  cbdata.nsamples = n_test_images;
+  cbdata.sample_size = npixels;
 
   DNN_Network *net = DNN_SequentialNetwork();
 
-#define FC_EXAMPLE
+#define FC2_EXAMPLE
 
 #ifdef FC_EXAMPLE
   DNN_Layer *fc = DNN_FullyConnectedLayer(DNN_ACTIVATION_SOFTMAX,
@@ -114,6 +119,20 @@ int main(int argc, char* argv[])
                                           nclasses,0,
                                           DNN_BACKEND_TINYDNN);
   DNN_SequentialAdd(net,fc);
+#endif
+
+#ifdef FC2_EXAMPLE
+  DNN_Layer *fc = DNN_FullyConnectedLayer(DNN_ACTIVATION_RELU,
+                                          imgsize*imgsize*1,
+                                          100,1,
+                                          DNN_BACKEND_TINYDNN);
+  DNN_Layer *fc2 = DNN_FullyConnectedLayer(DNN_ACTIVATION_SOFTMAX,
+                                          100,
+                                          nclasses,0,
+                                          DNN_BACKEND_TINYDNN);
+
+  DNN_SequentialAdd(net,fc);
+  DNN_SequentialAdd(net,fc2);
 #endif
 
 #ifdef CNN_EXAMPLE
@@ -169,6 +188,7 @@ int main(int argc, char* argv[])
 
   DNN_Optimizer *optimizer = DNN_AdamOptimizer(0.001,0.9,0.999,0.9,0.999);
 
+  tick = clock();
   epoch = 0;
   DNN_Train(net, optimizer, DNN_LOSS_CROSSENTROPY_MULTICLASS,
             train_images, train_labels,
@@ -180,6 +200,11 @@ int main(int argc, char* argv[])
 
 #ifdef FC_EXAMPLE
   DNN_LayerDelete(fc);
+#endif
+
+#ifdef FC2_EXAMPLE
+  DNN_LayerDelete(fc);
+  DNN_LayerDelete(fc2);
 #endif
 
 #ifdef CNN_EXAMPLE
