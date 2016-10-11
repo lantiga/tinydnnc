@@ -146,7 +146,7 @@ int main(int argc, char* argv[])
                                          8,2,2,
                                          DNN_BACKEND_TINYDNN);
   DNN_Layer *fc = DNN_FullyConnectedLayer(DNN_ACTIVATION_SOFTMAX,
-                                          imgsize/2*imgsize/2*16,
+                                          imgsize/2*imgsize/2*8,
                                           nclasses,0,
                                           DNN_BACKEND_TINYDNN);
 
@@ -186,13 +186,14 @@ int main(int argc, char* argv[])
   DNN_SequentialAdd(net,fc);
 #endif
 
-  DNN_Optimizer *optimizer = DNN_AdamOptimizer(0.001,0.9,0.999,0.9,0.999);
+  //DNN_Optimizer *optimizer = DNN_AdamOptimizer(0.001,0.9,0.999,0.9,0.999);
+  DNN_Optimizer *optimizer = DNN_SGDOptimizer(0.01,0.0);
 
   tick = clock();
   epoch = 0;
   DNN_Train(net, optimizer, DNN_LOSS_CROSSENTROPY_MULTICLASS,
             train_images, train_labels,
-            nimages, imgsize*imgsize, 20, 20,
+            nimages, npixels, 20, 20,
             batchCb, epochCb, &cbdata,
             0, 2, NULL);
 
