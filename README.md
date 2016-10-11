@@ -14,11 +14,14 @@ cd build
 cmake -DCMAKE_BUILD_TYPE:STRING=Release ../ && make
 ```
 
-To build the example (mnist):
+To build the examples (mnist classification and XOR regression):
 ```
 cd example
 make
 ```
+
+## TODO
+[ ] Support `network<graph>` in addition to `network<sequential>`
 
 ## License
 
