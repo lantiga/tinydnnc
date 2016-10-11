@@ -21,7 +21,7 @@ make
 ```
 
 ## TODO
-[ ] Support `network<graph>` in addition to `network<sequential>`
+- [ ] Support `network<graph>` in addition to `network<sequential>`
 
 ## License
 
