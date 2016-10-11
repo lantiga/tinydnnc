@@ -7,6 +7,7 @@
 #include "mnist.h"
 
 #include <time.h>
+#include <string.h>
 
 clock_t tick;
 
