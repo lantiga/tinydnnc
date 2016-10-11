@@ -201,6 +201,15 @@ void DNN_SequentialAdd(DNN_Network *net, DNN_Layer *layer)
   layer->addfn(net,layer);
 }
 
+DNN_Network *DNN_NetworkClone(DNN_Network *fromnet)
+{
+  DNN_Network *net = new DNN_Network;
+  net->type = DNN_NETWORK_SEQUENTIAL;
+  net->ptr = new network<sequential>;
+  *(network<sequential> *)net->ptr = *(network<sequential> *)fromnet->ptr;
+  return net;
+}
+
 void DNN_NetworkDelete(DNN_Network *net)
 {
   delete (network<sequential> *)net->ptr;

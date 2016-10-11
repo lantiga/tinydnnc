@@ -17,16 +17,18 @@ typedef struct CallbackData {
   long sample_size;
 } CallbackData;
 
-void batchCb(DNN_Network* net, void *data)
+void batchCb(DNN_Network *net, void *data)
 {
 }
 
 long epoch = 0;
 
-void epochCb(DNN_Network* net, void *data)
+void epochCb(DNN_Network *net, void *data)
 {
   CallbackData *cbdata = (CallbackData *)data;
-  float error = DNN_GetError(net,
+  // Clone just for sake of cloning
+  DNN_Network *net2 = DNN_NetworkClone(net);
+  float error = DNN_GetError(net2,
                              cbdata->test_images,
                              cbdata->test_labels,
                              cbdata->nsamples,
@@ -36,6 +38,7 @@ void epochCb(DNN_Network* net, void *data)
   printf("Epoch: %03ld; Error: %f; Elapsed(s): %f\n",epoch,error,elapsed);
   epoch += 1;
   tick = clock();
+  DNN_NetworkDelete(net2);
 }
 
 int main(int argc, char* argv[])

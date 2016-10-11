@@ -110,6 +110,8 @@ extern "C" {
 
   void DNN_SequentialAdd(DNN_Network *net, DNN_Layer *layer);
 
+  DNN_Network *DNN_NetworkClone(DNN_Network *net);
+
   void DNN_NetworkDelete(DNN_Network *net);
 
   void DNN_LayerDelete(DNN_Layer *layer);
