@@ -4,3 +4,4 @@ deps/
 *.o
 *.swp
 example/example
+example/example?

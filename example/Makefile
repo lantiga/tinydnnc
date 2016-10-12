@@ -8,6 +8,7 @@ DEPS_PATH=../deps
 
 EXAMPLE_OBJ = example.o
 EXAMPLE2_OBJ = example2.o
+EXAMPLE3_OBJ = example3.o
 
 INCLUDE_FLAGS=-I ../ -I $(DEPS_PATH)/tiny-dnn -I $(DEPS_PATH)/mnist
 
@@ -22,7 +23,7 @@ else
 	FINAL_LDPATH += DYLD_LIBRARY_PATH=../build
 endif
 
-all: example example2
+all: example example2 example3
 
 example.o: example.c
 	$(TDNN_CC) $(INCLUDE_FLAGS) -c $(FINAL_CFLAGS) example.c
@@ -36,6 +37,12 @@ example2.o: example2.c
 example2: example2.o
 	$(TDNN_CC) -L ../build $(FINAL_LDFLAGS) -ltinydnnc -o example2 $(EXAMPLE2_OBJ)
 
+example3.o: example3.c
+	$(TDNN_CC) $(INCLUDE_FLAGS) -c $(FINAL_CFLAGS) example3.c
+
+example3: example3.o
+	$(TDNN_CC) -L ../build $(FINAL_LDFLAGS) -ltinydnnc -o example3 $(EXAMPLE3_OBJ)
+
 clean:
-	rm example example2 *.o
+	rm example example2 example3 *.o
 
