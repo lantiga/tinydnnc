@@ -20,9 +20,6 @@ cd example
 make
 ```
 
-## TODO
-- [ ] Support `network<graph>` in addition to `network<sequential>`
-
 ## License
 
 BSD license https://opensource.org/licenses/BSD-3-Clause
